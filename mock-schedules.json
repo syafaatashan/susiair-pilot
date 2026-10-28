@@ -1,0 +1,606 @@
+{
+  "today": "2026-05-15",
+  "fieldGuide": {
+    "duty_date": "Date of the duty (ISO format).",
+    "status": "1 = pending/upcoming, 2 = completed/verified.",
+    "base_name": "Short code shown under the day on the calendar. For DTY days this is the airport base code (MKW, PDG, etc); for other duty types it matches the duty code (DTY, TRX, SCK, MED, etc).",
+    "base_color": "Hex color used to fill the day cell on the calendar.",
+    "duty_type": "Logical duty category. Maps to one entry in 'legend' below.",
+    "count_schedules": "Total flights/duties planned for the day. Drives the number badge at the top right of the calendar day cell.",
+    "count_logbooks": "Flights/duties already logged. When count_logbooks === count_schedules, show a tick icon instead of the number badge."
+  },
+  "legend": [
+    {
+      "code": "DTY",
+      "label": "On Duty",
+      "color": "#10B981"
+    },
+    {
+      "code": "RLV",
+      "label": "Requested Leave",
+      "color": "#475569"
+    },
+    {
+      "code": "SCK",
+      "label": "Sick",
+      "color": "#EF4444"
+    },
+    {
+      "code": "TRD",
+      "label": "Travel Day",
+      "color": "#FBA577"
+    },
+    {
+      "code": "TRX",
+      "label": "Training",
+      "color": "#F59E0B"
+    },
+    {
+      "code": "ADM",
+      "label": "Administration",
+      "color": "#9CA3AF"
+    },
+    {
+      "code": "FER",
+      "label": "Ferry",
+      "color": "#7C2D12"
+    },
+    {
+      "code": "MED",
+      "label": "Medical",
+      "color": "#7C3AED"
+    },
+    {
+      "code": "REC",
+      "label": "Recurrent",
+      "color": "#0EA5E9"
+    },
+    {
+      "code": "ULV",
+      "label": "Unpaid Leave",
+      "color": "#111827"
+    }
+  ],
+  "schedules": [
+    {
+      "id": "97000",
+      "duty_date": "2026-04-01",
+      "status": 2,
+      "base_name": "MKW",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 4,
+      "count_logbooks": 4
+    },
+    {
+      "id": "97001",
+      "duty_date": "2026-04-04",
+      "status": 2,
+      "base_name": "CJN",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 2,
+      "count_logbooks": 2
+    },
+    {
+      "id": "97002",
+      "duty_date": "2026-04-08",
+      "status": 2,
+      "base_name": "HLP",
+      "base_color": "#475569",
+      "duty_type": "RLV",
+      "count_schedules": 1,
+      "count_logbooks": 1
+    },
+    {
+      "id": "97003",
+      "duty_date": "2026-04-10",
+      "status": 2,
+      "base_name": "CJN",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 6,
+      "count_logbooks": 6
+    },
+    {
+      "id": "97004",
+      "duty_date": "2026-04-12",
+      "status": 2,
+      "base_name": "MKW",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 4,
+      "count_logbooks": 4
+    },
+    {
+      "id": "97005",
+      "duty_date": "2026-04-13",
+      "status": 2,
+      "base_name": "MKW",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 4,
+      "count_logbooks": 2
+    },
+    {
+      "id": "97006",
+      "duty_date": "2026-04-15",
+      "status": 2,
+      "base_name": "SIQ",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 4,
+      "count_logbooks": 4
+    },
+    {
+      "id": "97007",
+      "duty_date": "2026-04-16",
+      "status": 2,
+      "base_name": "CJN",
+      "base_color": "#0EA5E9",
+      "duty_type": "REC",
+      "count_schedules": 1,
+      "count_logbooks": 1
+    },
+    {
+      "id": "97008",
+      "duty_date": "2026-04-17",
+      "status": 2,
+      "base_name": "MKW",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 6,
+      "count_logbooks": 6
+    },
+    {
+      "id": "97009",
+      "duty_date": "2026-04-20",
+      "status": 2,
+      "base_name": "SIQ",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 6,
+      "count_logbooks": 6
+    },
+    {
+      "id": "97010",
+      "duty_date": "2026-04-22",
+      "status": 2,
+      "base_name": "PDG",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 2,
+      "count_logbooks": 1
+    },
+    {
+      "id": "97011",
+      "duty_date": "2026-04-23",
+      "status": 2,
+      "base_name": "SIQ",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 4,
+      "count_logbooks": 4
+    },
+    {
+      "id": "97012",
+      "duty_date": "2026-04-24",
+      "status": 2,
+      "base_name": "CJN",
+      "base_color": "#9CA3AF",
+      "duty_type": "ADM",
+      "count_schedules": 1,
+      "count_logbooks": 1
+    },
+    {
+      "id": "97013",
+      "duty_date": "2026-04-26",
+      "status": 2,
+      "base_name": "CJN",
+      "base_color": "#F59E0B",
+      "duty_type": "TRX",
+      "count_schedules": 1,
+      "count_logbooks": 1
+    },
+    {
+      "id": "97014",
+      "duty_date": "2026-04-28",
+      "status": 2,
+      "base_name": "CJN",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 4,
+      "count_logbooks": 4
+    },
+    {
+      "id": "97015",
+      "duty_date": "2026-04-29",
+      "status": 2,
+      "base_name": "CJN",
+      "base_color": "#F59E0B",
+      "duty_type": "TRX",
+      "count_schedules": 1,
+      "count_logbooks": 1
+    },
+    {
+      "id": "97016",
+      "duty_date": "2026-04-30",
+      "status": 2,
+      "base_name": "PDG",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 4,
+      "count_logbooks": 4
+    },
+    {
+      "id": "97017",
+      "duty_date": "2026-05-01",
+      "status": 2,
+      "base_name": "PDG",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 2,
+      "count_logbooks": 2
+    },
+    {
+      "id": "97018",
+      "duty_date": "2026-05-04",
+      "status": 2,
+      "base_name": "HLP",
+      "base_color": "#475569",
+      "duty_type": "RLV",
+      "count_schedules": 1,
+      "count_logbooks": 1
+    },
+    {
+      "id": "97019",
+      "duty_date": "2026-05-05",
+      "status": 2,
+      "base_name": "PDG",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 4,
+      "count_logbooks": 4
+    },
+    {
+      "id": "97020",
+      "duty_date": "2026-05-06",
+      "status": 2,
+      "base_name": "CJN",
+      "base_color": "#F59E0B",
+      "duty_type": "TRX",
+      "count_schedules": 1,
+      "count_logbooks": 1
+    },
+    {
+      "id": "97021",
+      "duty_date": "2026-05-07",
+      "status": 2,
+      "base_name": "PDG",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 4,
+      "count_logbooks": 4
+    },
+    {
+      "id": "97022",
+      "duty_date": "2026-05-08",
+      "status": 2,
+      "base_name": "PDG",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 6,
+      "count_logbooks": 6
+    },
+    {
+      "id": "97023",
+      "duty_date": "2026-05-11",
+      "status": 2,
+      "base_name": "MKW",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 6,
+      "count_logbooks": 6
+    },
+    {
+      "id": "97024",
+      "duty_date": "2026-05-12",
+      "status": 2,
+      "base_name": "MKW",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 4,
+      "count_logbooks": 4
+    },
+    {
+      "id": "97025",
+      "duty_date": "2026-05-13",
+      "status": 2,
+      "base_name": "SIQ",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 6,
+      "count_logbooks": 6
+    },
+    {
+      "id": "97026",
+      "duty_date": "2026-05-14",
+      "status": 2,
+      "base_name": "SIQ",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 6,
+      "count_logbooks": 6
+    },
+    {
+      "id": "97027",
+      "duty_date": "2026-05-15",
+      "status": 1,
+      "base_name": "MKW",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 6,
+      "count_logbooks": 6
+    },
+    {
+      "id": "97028",
+      "duty_date": "2026-05-19",
+      "status": 1,
+      "base_name": "SIQ",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 2,
+      "count_logbooks": 0
+    },
+    {
+      "id": "97029",
+      "duty_date": "2026-05-20",
+      "status": 1,
+      "base_name": "CJN",
+      "base_color": "#7C3AED",
+      "duty_type": "MED",
+      "count_schedules": 1,
+      "count_logbooks": 0
+    },
+    {
+      "id": "97030",
+      "duty_date": "2026-05-21",
+      "status": 1,
+      "base_name": "CJN",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 4,
+      "count_logbooks": 0
+    },
+    {
+      "id": "97031",
+      "duty_date": "2026-05-22",
+      "status": 1,
+      "base_name": "MKW",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 4,
+      "count_logbooks": 0
+    },
+    {
+      "id": "97032",
+      "duty_date": "2026-05-23",
+      "status": 1,
+      "base_name": "CJN",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 6,
+      "count_logbooks": 0
+    },
+    {
+      "id": "97033",
+      "duty_date": "2026-05-25",
+      "status": 1,
+      "base_name": "MKW",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 6,
+      "count_logbooks": 0
+    },
+    {
+      "id": "97034",
+      "duty_date": "2026-05-26",
+      "status": 1,
+      "base_name": "CJN",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 2,
+      "count_logbooks": 0
+    },
+    {
+      "id": "97035",
+      "duty_date": "2026-05-27",
+      "status": 1,
+      "base_name": "CJN",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 2,
+      "count_logbooks": 0
+    },
+    {
+      "id": "97036",
+      "duty_date": "2026-05-29",
+      "status": 1,
+      "base_name": "PDG",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 4,
+      "count_logbooks": 0
+    },
+    {
+      "id": "97037",
+      "duty_date": "2026-05-31",
+      "status": 1,
+      "base_name": "MKW",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 2,
+      "count_logbooks": 0
+    },
+    {
+      "id": "97038",
+      "duty_date": "2026-06-01",
+      "status": 1,
+      "base_name": "MKW",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 6,
+      "count_logbooks": 0
+    },
+    {
+      "id": "97039",
+      "duty_date": "2026-06-02",
+      "status": 1,
+      "base_name": "MKW",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 6,
+      "count_logbooks": 0
+    },
+    {
+      "id": "97040",
+      "duty_date": "2026-06-03",
+      "status": 1,
+      "base_name": "MKW",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 4,
+      "count_logbooks": 0
+    },
+    {
+      "id": "97041",
+      "duty_date": "2026-06-04",
+      "status": 1,
+      "base_name": "CJN",
+      "base_color": "#FBA577",
+      "duty_type": "TRX",
+      "count_schedules": 1,
+      "count_logbooks": 0
+    },
+    {
+      "id": "97042",
+      "duty_date": "2026-06-05",
+      "status": 1,
+      "base_name": "PDG",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 6,
+      "count_logbooks": 0
+    },
+    {
+      "id": "97043",
+      "duty_date": "2026-06-06",
+      "status": 1,
+      "base_name": "HLP",
+      "base_color": "#7C2D12",
+      "duty_type": "FER",
+      "count_schedules": 1,
+      "count_logbooks": 0
+    },
+    {
+      "id": "97044",
+      "duty_date": "2026-06-08",
+      "status": 1,
+      "base_name": "CJN",
+      "base_color": "#9CA3AF",
+      "duty_type": "ADM",
+      "count_schedules": 1,
+      "count_logbooks": 0
+    },
+    {
+      "id": "97045",
+      "duty_date": "2026-06-09",
+      "status": 1,
+      "base_name": "SIQ",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 6,
+      "count_logbooks": 0
+    },
+    {
+      "id": "97046",
+      "duty_date": "2026-06-10",
+      "status": 1,
+      "base_name": "PDG",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 4,
+      "count_logbooks": 0
+    },
+    {
+      "id": "97047",
+      "duty_date": "2026-06-16",
+      "status": 1,
+      "base_name": "MKW",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 4,
+      "count_logbooks": 0
+    },
+    {
+      "id": "97048",
+      "duty_date": "2026-06-19",
+      "status": 1,
+      "base_name": "CJN",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 4,
+      "count_logbooks": 0
+    },
+    {
+      "id": "97049",
+      "duty_date": "2026-06-22",
+      "status": 1,
+      "base_name": "CJN",
+      "base_color": "#7C3AED",
+      "duty_type": "MED",
+      "count_schedules": 1,
+      "count_logbooks": 0
+    },
+    {
+      "id": "97050",
+      "duty_date": "2026-06-23",
+      "status": 1,
+      "base_name": "HLP",
+      "base_color": "#475569",
+      "duty_type": "RLV",
+      "count_schedules": 1,
+      "count_logbooks": 0
+    },
+    {
+      "id": "97051",
+      "duty_date": "2026-06-24",
+      "status": 1,
+      "base_name": "PDG",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 6,
+      "count_logbooks": 0
+    },
+    {
+      "id": "97052",
+      "duty_date": "2026-06-25",
+      "status": 1,
+      "base_name": "MKW",
+      "base_color": "#10B981",
+      "duty_type": "DTY",
+      "count_schedules": 2,
+      "count_logbooks": 0
+    },
+    {
+      "id": "97053",
+      "duty_date": "2026-06-29",
+      "status": 1,
+      "base_name": "CJN",
+      "base_color": "#0EA5E9",
+      "duty_type": "REC",
+      "count_schedules": 1,
+      "count_logbooks": 0
+    }
+  ]
+}

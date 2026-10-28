@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: susiair-pilot-api
+    runtime: node
+    plan: free
+    rootDir: nest
+    buildCommand: npm ci && npm run build
+    startCommand: node dist/main.js
+    healthCheckPath: /pilot/me
+    envVars:
+      - key: NODE_VERSION
+        value: 24
+      - key: JWT_SECRET
+        generateValue: true
+      - key: APP_TODAY
+        value: 2026-05-15

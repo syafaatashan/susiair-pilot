@@ -1,0 +1,34 @@
+{
+  "today": "2026-05-31",
+  "thresholds": {
+    "warningDays": 30,
+    "comment": "If daysRemaining <= 0: expired (red). If 0 < daysRemaining <= warningDays: soon (amber). Else: safe (green). daysRemaining = (expiryDate - today) in days."
+  },
+  "documents": [
+    {
+      "id": "doc_recurrent",
+      "label": "Next Recurrent Date",
+      "expiryDate": "2026-10-14"
+    },
+    {
+      "id": "doc_ppc",
+      "label": "PPC Exp. Date",
+      "expiryDate": "2026-12-25"
+    },
+    {
+      "id": "doc_license",
+      "label": "Indonesian License Exp. Date",
+      "expiryDate": "2026-05-29"
+    },
+    {
+      "id": "doc_medical",
+      "label": "Indonesian Medical Exp. Date",
+      "expiryDate": "2026-06-11"
+    },
+    {
+      "id": "doc_security",
+      "label": "Security Clearance Exp. Date",
+      "expiryDate": "2026-05-01"
+    }
+  ]
+}

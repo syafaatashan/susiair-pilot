@@ -1,0 +1,18 @@
+// Design tokens — Susi Air pilot app (from the brief).
+$navy: #0e2138; // primary + text primary
+$red: #e63757; // brand red: CTAs, accents, danger
+$bg: #f5f6f8;
+$surface: #ffffff;
+$text-secondary: #6b7280;
+$success: #1fbf8f;
+$warning: #f59e0b;
+$chart-accent: #22c5e8;
+$border: #e5e7eb;
+
+$radius-card: 14px;
+$radius-pill: 999px;
+$shadow-card: 0 1px 2px rgba(14, 33, 56, 0.04), 0 6px 18px rgba(14, 33, 56, 0.06);
+$font: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+// Fixed mobile-first shell: the app is a pilot tool, cap content width.
+$shell-width: 480px;
