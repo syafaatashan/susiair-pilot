@@ -11,8 +11,8 @@
 | Item | Link |
 | --- | --- |
 | GitHub repository | <https://github.com/syafaatashan/susiair-pilot> |
-| Live web app (Nuxt 3) | `<<WEB_APP_URL>>` (deployed by candidate on Vercel — see §6 / `docs/deployment.md`) |
-| Live API (NestJS) | `<<API_URL>>` (deployed by candidate on Render — see `docs/deployment.md`) |
+| Live web app (Nuxt 3) | `https://susiair-pilot.vercel.app` (deployed by candidate on Vercel — see §6 / `docs/deployment.md`) |
+| Live API (NestJS) | `https://susiair-pilot-api.onrender.com` (deployed by candidate on Render — see `docs/deployment.md`) |
 
 Repository layout: `nest/` (REST API) and `nuxt/` (pilot web app), plus `docs/` with the
 API contract, deployment guide and audit reports.

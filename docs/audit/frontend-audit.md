@@ -412,3 +412,13 @@ The most important issue at first audit was F-1 (JWT in plaintext in SSR HTML). 
 the token never appears in page source and lives only in an httpOnly cookie set behind a
 server-side Nitro proxy route. The remaining cosmetic item (F-12 greeting) is the only open
 note and is not security-relevant.
+
+## B.5 Submission links — closed (appended after deploy, 2026-10-28)
+
+A-3 (PART A §A.4) and the "most important issue (submission)" note are now **CLOSED**:
+`docs/submission.md:14-15` carry the live URLs — `https://susiair-pilot.vercel.app`
+(Nuxt 3, Vercel) and `https://susiair-pilot-api.onrender.com` (NestJS, Render, web service
+with a `GET /health` readiness endpoint). Verified live on 2026-10-28: backend `GET /health`
+→ 200; `POST /auth/login` with the demo credentials → 200 + fresh JWT. The repo also runs a
+GitHub Actions cron (`keepalive.yml`, every 10 min) that pings `/health` to keep the Render
+free instance out of its 15-minute idle spin-down window.
