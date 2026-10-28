@@ -1,3 +1,5 @@
+[![Built with DeepSeek Harness](https://img.shields.io/badge/built%20with-deepseek%20harness-blue?logo=deepseek&labelColor=%230e2138&color=%230e2138)](https://github.com/deepseek-ai/harness)
+
 # Susi Air — Fullstack Developer Technical Test
 
 A small piece of the **Susi Air Pilot App**: pilots sign in, see how close they are to
