@@ -3,10 +3,19 @@ import type { LimitCard } from '~/stores/flightHours'
 
 const props = defineProps<{ card: LimitCard }>()
 
-const pct = computed(() => (props.card.limit ? Math.min(100, (props.card.hours / props.card.limit) * 100) : 0))
-const over = computed(() => props.card.hours > props.card.limit)
+/** null = not loaded yet; the parent hides the cards entirely on a load failure. */
+const hasValue = computed(() => props.card.hours !== null)
+const value = computed(() => props.card.hours ?? 0)
+const pct = computed(() => (props.card.limit ? Math.min(100, (value.value / props.card.limit) * 100) : 0))
+const over = computed(() => value.value > props.card.limit)
 const tone = computed(() => (over.value ? 'danger' : pct.value >= 80 ? 'warning' : 'ok'))
-const hours = computed(() => props.card.hours.toFixed(1))
+const hours = computed(() => (hasValue.value ? value.value.toFixed(1) : '—'))
+const foot = computed(() => {
+  if (!hasValue.value) return 'not loaded'
+  return over.value
+    ? `${(value.value - props.card.limit).toFixed(1)} h over limit`
+    : `${(props.card.limit - value.value).toFixed(1)} h remaining`
+})
 </script>
 
 <template>
@@ -20,11 +29,9 @@ const hours = computed(() => props.card.hours.toFixed(1))
       <span class="limit-card__limit">/ {{ card.limit }} h</span>
     </p>
     <div class="limit-card__track" :class="`limit-card__track--${tone}`">
-      <div class="limit-card__fill" :style="{ width: `${pct}%` }" />
+      <div class="limit-card__fill" :style="{ width: `${hasValue ? pct : 0}%` }" />
     </div>
-    <p class="limit-card__foot" :class="`limit-card__foot--${tone}`">
-      {{ over ? `${(card.hours - card.limit).toFixed(1)} h over limit` : `${(card.limit - card.hours).toFixed(1)} h remaining` }}
-    </p>
+    <p class="limit-card__foot" :class="`limit-card__foot--${tone}`">{{ foot }}</p>
   </article>
 </template>
 

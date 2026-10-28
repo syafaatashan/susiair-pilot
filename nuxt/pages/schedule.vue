@@ -12,8 +12,6 @@ function selectDate(date: string) {
 
 <template>
   <div class="schedule">
-    <div v-if="schedule.error" class="inline-error">{{ schedule.error }}</div>
-
     <div class="card schedule__card">
       <div class="schedule__nav">
         <button class="btn-ghost" type="button" :disabled="schedule.loading" @click="schedule.step(-1)">‹ Prev</button>
@@ -21,7 +19,15 @@ function selectDate(date: string) {
         <button class="btn-ghost" type="button" :disabled="schedule.loading" @click="schedule.step(1)">Next ›</button>
       </div>
 
+      <!-- Month load failed: real error + retry, never an empty calendar passed off as "no duties". -->
+      <div v-if="schedule.error" class="error-state">
+        <p class="error-state__title">Schedule unavailable</p>
+        <p class="error-state__msg">{{ schedule.error }}</p>
+        <button class="btn-ghost" type="button" @click="schedule.fetchMonth()">Retry</button>
+      </div>
+
       <DutyCalendar
+        v-else
         :year="schedule.year"
         :month="schedule.month"
         :entries="schedule.entries"
@@ -81,13 +87,25 @@ function selectDate(date: string) {
   }
 }
 
-.inline-error {
-  background: rgba(230, 55, 87, 0.1);
-  border-left: 3px solid $red;
-  color: $red;
-  font-size: 13px;
-  font-weight: 600;
-  border-radius: 8px;
-  padding: 10px 12px;
+.error-state {
+  background: rgba(230, 55, 87, 0.07);
+  border: 1px solid rgba(230, 55, 87, 0.22);
+  border-radius: $radius-card;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+
+  &__title {
+    font-size: 14px;
+    font-weight: 800;
+    color: $red;
+  }
+
+  &__msg {
+    font-size: 13px;
+    color: $text-secondary;
+  }
 }
 </style>

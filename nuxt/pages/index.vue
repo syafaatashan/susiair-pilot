@@ -22,46 +22,53 @@ await Promise.all([hours.fetchAll(), docs.fetchAll()])
         <span v-if="hours.today" class="muted">as of {{ hours.today }}</span>
       </div>
 
-      <div v-if="hours.error" class="inline-error">{{ hours.error }}</div>
-
-      <div class="home__cards">
-        <LimitCard v-for="card in hours.cards" :key="card.key" :card="card" />
+      <!-- Load failed: show the real error and a retry — never fabricated 0.0 values. -->
+      <div v-if="hours.error" class="error-state">
+        <p class="error-state__title">Flight hours unavailable</p>
+        <p class="error-state__msg">{{ hours.error }}</p>
+        <button class="btn-ghost" type="button" @click="hours.fetchAll()">Retry</button>
       </div>
 
-      <div class="card chart-card">
-        <div class="chart-card__head">
-          <div>
-            <p class="chart-card__title">Flight Hours Trend</p>
-            <p class="muted">
-              {{ hours.summary ? `Rolling ${rangeLabels[hours.range]} window · limit ${hours.summary.limit}h` : 'Loading…' }}
-            </p>
-          </div>
-          <div class="toggle" role="tablist" aria-label="Chart range">
-            <button
-              v-for="r in SUMMARY_RANGES"
-              :key="r"
-              type="button"
-              role="tab"
-              class="toggle__btn"
-              :class="{ 'is-active': hours.range === r }"
-              :aria-selected="hours.range === r"
-              @click="hours.setRange(r)"
-            >
-              {{ r }}
-            </button>
-          </div>
+      <template v-else>
+        <div class="home__cards">
+          <LimitCard v-for="card in hours.cards" :key="card.key" :card="card" />
         </div>
 
-        <HoursChart
-          v-if="hours.summary"
-          :points="hours.summary.chartData"
-          :limit="hours.summary.limit"
-          :y-max="hours.summary.yMax"
-          :today="hours.summary.today"
-          :range="hours.summary.range"
-        />
-        <p v-else class="muted">Loading chart…</p>
-      </div>
+        <div class="card chart-card">
+          <div class="chart-card__head">
+            <div>
+              <p class="chart-card__title">Flight Hours Trend</p>
+              <p class="muted">
+                {{ hours.summary ? `Rolling ${rangeLabels[hours.range]} window · limit ${hours.summary.limit}h` : 'Loading…' }}
+              </p>
+            </div>
+            <div class="toggle" role="tablist" aria-label="Chart range">
+              <button
+                v-for="r in SUMMARY_RANGES"
+                :key="r"
+                type="button"
+                role="tab"
+                class="toggle__btn"
+                :class="{ 'is-active': hours.range === r }"
+                :aria-selected="hours.range === r"
+                @click="hours.setRange(r)"
+              >
+                {{ r }}
+              </button>
+            </div>
+          </div>
+
+          <HoursChart
+            v-if="hours.summary"
+            :points="hours.summary.chartData"
+            :limit="hours.summary.limit"
+            :y-max="hours.summary.yMax"
+            :today="hours.summary.today"
+            :range="hours.summary.range"
+          />
+          <p v-else class="muted">Loading chart…</p>
+        </div>
+      </template>
     </section>
 
     <!-- Documents -->
@@ -70,8 +77,13 @@ await Promise.all([hours.fetchAll(), docs.fetchAll()])
         <h2 class="section-title">My Documents</h2>
         <span class="muted">expiry status</span>
       </div>
-      <div v-if="docs.error" class="inline-error">{{ docs.error }}</div>
-      <div class="card">
+
+      <div v-if="docs.error" class="error-state">
+        <p class="error-state__title">Documents unavailable</p>
+        <p class="error-state__msg">{{ docs.error }}</p>
+        <button class="btn-ghost" type="button" @click="docs.fetchAll()">Retry</button>
+      </div>
+      <div v-else class="card">
         <DocumentList :items="docs.items" :loading="docs.loading" />
       </div>
     </section>
@@ -146,13 +158,25 @@ await Promise.all([hours.fetchAll(), docs.fetchAll()])
   }
 }
 
-.inline-error {
-  background: rgba(230, 55, 87, 0.1);
-  border-left: 3px solid $red;
-  color: $red;
-  font-size: 13px;
-  font-weight: 600;
-  border-radius: 8px;
-  padding: 10px 12px;
+.error-state {
+  background: rgba(230, 55, 87, 0.07);
+  border: 1px solid rgba(230, 55, 87, 0.22);
+  border-radius: $radius-card;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+
+  &__title {
+    font-size: 14px;
+    font-weight: 800;
+    color: $red;
+  }
+
+  &__msg {
+    font-size: 13px;
+    color: $text-secondary;
+  }
 }
 </style>

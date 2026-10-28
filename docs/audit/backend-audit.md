@@ -18,6 +18,14 @@ Reproduction:
 python "E:\Deeseek-Harness\Susi Air\docs\audit\verify_backend.py" http://127.0.0.1:3010
 ```
 
+> **STATUS UPDATE 2026-10-28 (post-fix re-audit).** This first-pass verdict is historical. After
+> the author's fixes, the re-run of this same reproducer against the current tree is
+> **58 PASS / 0 FAIL**; D-1…D-9 are all closed, RISK-1/2/5/6 closed and RISK-3/4 reduced. The
+> re-audit, the closure table and the files that changed are in
+> [`frontend-audit.md`](./frontend-audit.md) PART A (raw output in
+> [`output-backend.txt`](./output-backend.txt)). The defect text below is kept as the record of
+> what was wrong at that revision.
+
 ## Verdict summary
 
 | Result | Count |

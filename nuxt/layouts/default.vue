@@ -1,6 +1,8 @@
 <script setup lang="ts">
 // The header lives outside the page's async setup, so fetch the pilot here:
 // an awaited setup suspends the whole layout subtree until the profile is in.
+// The auth plugin has already resolved the session, so a missing cookie would
+// have been redirected to /login by the global middleware before this runs.
 const pilot = usePilotStore()
 await (pilot.profile ? Promise.resolve() : pilot.fetchProfile())
 </script>

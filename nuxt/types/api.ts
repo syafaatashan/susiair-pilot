@@ -58,9 +58,3 @@ export interface MonthSchedules {
   legend: LegendEntry[]
   schedules: ScheduleEntry[]
 }
-
-export interface LoginResponse {
-  access_token: string
-  token_type: string
-  expires_in: number
-}

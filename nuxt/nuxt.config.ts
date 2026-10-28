@@ -7,10 +7,11 @@ export default defineNuxtConfig({
   components: [{ path: '~/components', pathPrefix: false }],
   css: ['~/assets/scss/main.scss'],
   runtimeConfig: {
-    public: {
-      // Override with NUXT_PUBLIC_API_BASE at runtime.
-      apiBase: 'http://localhost:3010'
-    }
+    /** Server-side only: the Nitro proxy calls the NestJS API with this base URL
+     *  (override with NUXT_API_BASE). The browser only ever talks to same-origin
+     *  /api/**, so the JWT can stay in an httpOnly cookie and never enters HTML. */
+    apiBase: 'http://localhost:3010',
+    public: {}
   },
   app: {
     head: {

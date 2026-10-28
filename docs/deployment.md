@@ -51,7 +51,12 @@ git push -u origin main
    | Key | Value |
    | --- | --- |
    | `NODE_VERSION` | `24` |
-   | `JWT_SECRET` | a long random string (Render can generate one) |
+   | `NODE_ENV` | `production` |
+   | `JWT_SECRET` | a long random string (Render can generate one) — **required** |
+
+   The API refuses to boot when `NODE_ENV=production` and `JWT_SECRET` is missing, because
+   the repository contains a public development fallback secret that would let anyone forge
+   a token.
 
    Do **not** set `APP_TODAY` — the application default (`2026-05-15`, the brief's date) is
    what the submission is reviewed against.
@@ -94,6 +99,11 @@ Free Render instances sleep after ~15 minutes idle; the first request afterwards
 
 CORS needs no configuration: `nest/src/main.ts` enables it with `origin: true`.
 
+The web app talks to the API through its own Nitro server routes (`nuxt/server/api/...`),
+which attach the bearer token from an `httpOnly` cookie. The token is therefore never
+present in the HTML, in the browser's JavaScript, or in a CDN cache — which also means the
+deployed web app works even if the API's CORS policy were tightened later.
+
 ### Smoke-test the deployed web app
 
 1. Open the Vercel URL in a mobile-sized viewport. You should be redirected to `/login`.
@@ -123,9 +133,9 @@ runtime rather than a plain static publish if you want SSR.
 `nest/Dockerfile`:
 
 - Railway: New Project → Deploy from repo → set **Root Directory** to `nest`; Railway
-  detects the Dockerfile. Add `JWT_SECRET`.
+  detects the Dockerfile. Add `JWT_SECRET` and set `NODE_ENV=production`.
 - Fly.io: `cd nest && fly launch --dockerfile Dockerfile`, then
-  `fly secrets set JWT_SECRET=...`, then `fly deploy`.
+  `fly secrets set JWT_SECRET=...`, set `NODE_ENV=production`, then `fly deploy`.
 
 The Dockerfile copies `data/` next to `dist/`, which the JSON loader needs at boot.
 

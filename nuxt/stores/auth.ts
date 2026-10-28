@@ -1,65 +1,70 @@
-import type { LoginResponse, Pilot } from '~/types/api'
+import type { Pilot } from '~/types/api'
 
-const TOKEN_COOKIE = 'susi_token'
-
+/**
+ * Auth state holds NO token. The JWT lives only in the server-set httpOnly
+ * `susi_token` cookie, so it can never be read by browser JS or serialised
+ * into the SSR payload.
+ */
 export const useAuthStore = defineStore('auth', () => {
-  // Cookie (not localStorage) so route middleware can read it on the server too.
-  const tokenCookie = useCookie<string | null>(TOKEN_COOKIE, {
-    maxAge: 60 * 60 * 24 * 30,
-    sameSite: 'lax',
-    path: '/'
-  })
-
-  const token = ref<string | null>(tokenCookie.value ?? null)
+  const authenticated = ref(false)
   const pilot = ref<Pilot | null>(null)
   const loading = ref(false)
   const error = ref<string | null>(null)
 
-  const isAuthenticated = computed(() => !!token.value)
-
-  function setToken(value: string | null) {
-    token.value = value
-    tokenCookie.value = value
-  }
-
-  function signOut() {
-    setToken(null)
-    pilot.value = null
-    const schedule = useScheduleStore()
-    schedule.reset()
+  /** Server route: validates the httpOnly cookie and returns { authenticated }. */
+  async function checkSession() {
+    const requestFetch = useRequestFetch()
+    try {
+      const res = await requestFetch<{ authenticated: boolean }>('/api/auth/session')
+      authenticated.value = !!res?.authenticated
+    } catch {
+      authenticated.value = false
+    }
+    return authenticated.value
   }
 
   async function login(username: string, password: string) {
     loading.value = true
     error.value = null
     try {
-      // Raw $fetch: the login response is the only shape that is not the standard
-      // error-then-throw path we want for the form (form renders `error` inline).
-      const config = useRuntimeConfig()
-      const base = String(config.public.apiBase || '').replace(/\/$/, '')
-      const res = await $fetch<LoginResponse>(`${base}/auth/login`, {
-        method: 'POST',
-        body: { username, password }
-      })
-      setToken(res.access_token)
+      // The response carries no token — only { ok: true } and the httpOnly cookie.
+      await useApi().post<{ ok: boolean }>('/auth/login', { username, password })
+      authenticated.value = true
       return true
     } catch (err) {
-      error.value = useApi().messageOf(err)
+      error.value = (err as Error).message
       return false
     } finally {
       loading.value = false
     }
   }
 
-  async function fetchPilot() {
-    if (!token.value) return
-    loading.value = true
-    try {
-      pilot.value = await useApi().get<Pilot>('/pilot/me')
-    } finally {
-      loading.value = false
-    }
+  function markSignedOut() {
+    authenticated.value = false
+    pilot.value = null
   }
 
-  return { token, pilot, loading, error, isAuthenticated, login, fetchPilot, signOut, setToken }
+  /** Clears the httpOnly cookie server-side, then wipes every store. */
+  async function signOut() {
+    try {
+      await useApi().post('/auth/logout')
+    } catch {
+      // Best effort; local state is reset regardless.
+    }
+    resetAllStores()
+  }
+
+  function resetAllStores() {
+    markSignedOut()
+    usePilotStore().reset()
+    useFlightHoursStore().reset()
+    useDocumentsStore().reset()
+    useScheduleStore().reset()
+    useToastStore().clear()
+  }
+
+  return {
+    authenticated, pilot, loading, error,
+    checkSession, login, markSignedOut, signOut, resetAllStores
+  }
 })

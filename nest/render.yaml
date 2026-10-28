@@ -9,7 +9,10 @@ services:
     envVars:
       - key: NODE_VERSION
         value: 24
+      # Required: the API refuses to boot in production without a real secret.
       - key: JWT_SECRET
         generateValue: true
-      - key: APP_TODAY
-        value: 2026-05-15
+      - key: NODE_ENV
+        value: production
+      # APP_TODAY is deliberately NOT set: the application default is 2026-05-15,
+      # the date the brief mandates, and that is what the submission is reviewed against.

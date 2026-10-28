@@ -1,14 +1,12 @@
 /**
  * Auth-aware navigation guard.
- * - unauthenticated → /login
- * - authenticated hitting /login → /
- * All other pages keep running (pinia persists state across client-side navigation).
+ * `authenticated` is resolved from the httpOnly cookie on the server (once per
+ * SSR render) and via /api/auth/session on the client, so a forged cookie value
+ * does not get past this check.
  */
 export default defineNuxtRouteMiddleware((to) => {
-  const tokenCookie = useCookie<string | null>('susi_token')
   const auth = useAuthStore()
-  const authed = !!auth.token || !!tokenCookie.value
 
-  if (!authed && to.path !== '/login') return navigateTo('/login')
-  if (authed && to.path === '/login') return navigateTo('/')
+  if (!auth.authenticated && to.path !== '/login') return navigateTo('/login')
+  if (auth.authenticated && to.path === '/login') return navigateTo('/')
 })

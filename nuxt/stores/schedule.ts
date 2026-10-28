@@ -11,22 +11,6 @@ export const useScheduleStore = defineStore('schedule', () => {
   const legend = computed(() => data.value?.legend ?? [])
   const today = computed(() => data.value?.today ?? '')
 
-  /** Keyed by ISO duty_date for O(1) cell lookup. */
-  const byDate = computed<Record<string, ScheduleEntry>>(() =>
-    Object.fromEntries(entries.value.map((e) => [e.duty_date, e]))
-  )
-
-  function dayKey(d: number) {
-    return `${year.value}-${String(month.value).padStart(2, '0')}-${String(d).padStart(2, '0')}`
-  }
-
-  /** Remaining duties when not fully logged, else a tick (null = tick). */
-  function remaining(entry: ScheduleEntry): number | null {
-    return entry.count_logbooks === entry.count_schedules
-      ? null
-      : entry.count_schedules - entry.count_logbooks
-  }
-
   async function fetchMonth(y = year.value, m = month.value) {
     year.value = y
     month.value = m
@@ -35,8 +19,8 @@ export const useScheduleStore = defineStore('schedule', () => {
     try {
       data.value = await useApi().get<MonthSchedules>('/schedules', { year: y, month: m })
     } catch (err) {
-      error.value = (err as Error).message
       data.value = null
+      error.value = (err as Error).message
     } finally {
       loading.value = false
     }
@@ -52,11 +36,8 @@ export const useScheduleStore = defineStore('schedule', () => {
     data.value = null
     year.value = 2026
     month.value = 5
+    error.value = null
   }
 
-  return {
-    year, month, data, loading, error,
-    entries, legend, today, byDate,
-    dayKey, remaining, fetchMonth, step, reset
-  }
+  return { year, month, data, loading, error, entries, legend, today, fetchMonth, step, reset }
 })

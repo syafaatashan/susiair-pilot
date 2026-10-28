@@ -21,5 +21,9 @@ export const useToastStore = defineStore('toast', () => {
     items.value = items.value.filter((t) => t.id !== id)
   }
 
-  return { items, show, dismiss }
+  function clear() {
+    items.value = []
+  }
+
+  return { items, show, dismiss, clear }
 })

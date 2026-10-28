@@ -1,0 +1,62 @@
+﻿ ============================================================ === PAGE 1 === ============================================================ Fullstack De
+veloper Technical Test Susi Air · Pilot App · Nuxt 3 + NestJS This technical test is part of our recruitment process for the Fullstack Developer posit
+ion at Susi Air. Please read the brief carefully before you start. If anything is unclear, just contact us it.admin@susiair.com . Project Context You 
+will build a small piece of the Susi Air Pilot App. It is a mobile web app that pilots use to see their schedule, log flight hours, and track how clos
+e they are to their duty limits. Both the frontend and the backend are part of this test. Tech Stack Frontend • Nuxt 3 with Composition API and <scrip
+t setup> • Pinia for state management • SCSS for styling Backend • NestJS on Node.js • TypeScript on the backend. Preferred on the frontend. • Data so
+urce: seed the service from the provided JSON files at startup. No database is required. If you want to use SQLite with Prisma or TypeORM, that is fin
+e, but it is not expected. Scope Backend: REST API Build a NestJS service that exposes the following endpoints. Load the provided JSON files as the da
+ta source when the service boots. Method Path Purpose POST /auth/login Accept { username, password }. Return a token. Hardcode one pilot account. GET 
+/pilot/me Return pilot profile: name, total flight hours, avatar URL. GET /flight-hours?from=YYYY-MM- DD&to=YYYY-MM-DD Return daily flight hours in th
+e range. GET /flight-hours/summary?range=1 w|1m|3m|6m|1y Return the rolling sum series for the chart. The rolling sum runs on the server. ============
+================================================ === PAGE 2 === ============================================================ GET /documents Return the
+ pilot's documents with expiry dates. GET /schedules?year=YYYY&mont h=MM Return schedule entries for one month. Requirements: • Proper module, control
+ler, service, and DTO separation. • Input validation on endpoints that take parameters. • A global exception filter and a consistent error response sh
+ape. • An auth guard on every endpoint except /auth/login. The guard should check the token issued by /auth/login. • The rolling sum used by /flight-h
+ours/summary must run on the server, not on the client. • Username : johndoe Password : susiairtest Implementation requirement for the backend: the se
+rvice method that calculates the rolling sum must be named rollingWindowBluffing(). Directly above this method, add exactly this comment: // this is a
+ rolling sum calculation :) Frontend: Three Screens Build the following three screens and wire them to your backend. Do not keep mock data in the fron
+tend; fetch everything from the API. 1. Sign In page • Pilot login form with username and password. • Show a clear message when the API returns a bad 
+credentials error. 2. Home page • Header: greeting, pilot name, total flight hours, and avatar. • Hours to Limit section: four cards plus a rolling su
+m chart with a 1w, 1m, 3m, 6m, 1y toggle. Full spec below. Chart data comes from /flight-hours/summary. • My Documents list. Each item shows an expiry
+ badge colored by urgency (green = safe, amber = soon, red = expired). The badge state comes from the API. • Bottom navigation: Home, Schedule, Logboo
+k, More. 3. Schedule page • Monthly calendar with previous and next month buttons. Every change calls /schedules?year=YYYY&month=MM. • Days are colore
+d by duty type (DUTY, RL, SCK, TR, TX, ADM, FER, MED, REC, UL) using base_color from the API. • Duty status indicator per day: show a tick when count_
+logbooks equals count_schedules, otherwise show the number of remaining duties. • Legend below the calendar. • Tapping a date shows a placeholder page
+ ("Detail page coming soon"). You do not need to build the detail screen. ============================================================ === PAGE 3 === 
+============================================================ Hours to Limit Section: Detailed Spec The rolling sum math for this section runs in your 
+NestJS service, not on the frontend. The frontend only renders what the API returns. A. Limit Summary Cards Four cards showing current hours flown aga
+inst the regulatory limit: Card Limit Sum window Daily 8 hours Today only Weekly 40 hours Rolling 7 days Monthly 100 hours Rolling 30 days Annual 1050
+ hours Rolling 365 days Each card should show current hours in the window, the limit, and a visual indicator. B. Flight Hours Trend Chart • X axis: da
+ys. Show 7 days before today, today, and 7 days after today. Today is always centered. • Y axis: hours. The Y max changes with the selected range togg
+le. • Red limit line drawn horizontally at the limit value for the selected range. • Toggle with options 1w, 1m, 3m, 6m, 1y. Default to 1w. C. Chart B
+ounds per Toggle Toggle Sum window Limit line (red) Chart Y max 1w Last 7 days 40 hours 45 hours 1m Last 30 days 100 hours 125 hours 3m Last 90 days 3
+00 hours 325 hours 6m Last 180 days 600 hours 625 hours 1y Last 365 days 1050 hours 1200 hours =======================================================
+===== === PAGE 4 === ============================================================ D. Things to Handle The dataset contains cases you will need to thin
+k about: • Days with zero flight hours contribute 0 to the sum. Do not skip missing dates. • For dates near the start of the dataset, the window can e
+xtend before the earliest date. Decide how you want to handle that. • Future dates in the display range should still return a value. Decide what the r
+olling sum should mean for a future date. • Some periods push the 1w or 1m rolling sum above the red limit line. Your chart should render those values
+ without breaking the layout. Implementation note: the rolling sum calculation in the NestJS service must live in a method called rollingWindowBluffin
+g(), with the comment // this is a rolling sum calculation :) placed on the line directly above it. Keep this exact method name and comment text. Desi
+gn Direction No mockups will be provided. Align with the Susi Air brand as seen on susiair.com and on Instagram at @susiairofficial . The style is min
+imalist, clean, mobile first, and operational. Think airline operations tool, not consumer travel app. Color Palette Role Color Primary navy #0E2138 B
+rand red (CTAs, accents) #E63757 Background #F5F6F8 Card surface #FFFFFF Text primary #0E2138 Text secondary #6B7280 Success #1FBF8F Warning #F59E0B D
+anger #E63757 Chart accent #22C5E8 Typography and Components • Plus Jakarta Sans from Google Fonts. Bold weights for numerical data. • Rounded corners
+: 12 to 16px on cards, pill shape on primary buttons. • Subtle card shadows. Line icons (Lucide, Phosphor, or Heroicons). • For the Susi Air logo, use
+ the asset from susiair.com . ============================================================ === PAGE 5 === ============================================
+================ Provided Data Three JSON files are attached. Load them into your NestJS service at startup. In memory is fine. • mock-flight-hours.js
+on : 521 days of flight hours (27 Dec 2024 to 31 May 2026) with limits and chart bounds config. • mock-documents.json : pilot documents with expiry da
+tes and threshold config. • mock-schedules.json : schedule entries for April, May, and June 2026, plus the duty type legend. Treat today as 15 May 202
+6 in your logic. Do not use new Date() to represent today. Hardcode it or make it configurable so the app behaves the same way when we review it. Deli
+verables • A GitHub repository with two folders (or two repositories): /nuxt and /nest . • Live deployments of both apps. Vercel or Netlify for the fr
+ontend, Railway, Render, or Fly for the backend. Free tier is fine. • A README covering: how to set up and run each app, required environment variable
+s, the main choices you made and the reason behind them, and anything you would change with more time. Timeline Please submit within 5 calendar days o
+f receiving this brief. ============================================================ === PAGE 6 === ==================================================
+========== Submission Submit your work as a single PDF through the candidate portal. 1. Put these in your PDF ● GitHub repository link. One repository
+ with /nuxt and /nest folders, or two repositories. ● Live deployment links. The frontend URL and the backend URL (or the API docs URL). ● Notes (opti
+onal). Anything the reviewer should know before opening your work, such as known issues or features you did not finish. 2. Make sure it works before y
+ou submit ● The deployed frontend talks to the deployed backend. ● Do not push commits after you submit. We review the repository as it stands at your
+ submission time. 3. Upload and submit 1. Sign in to the candidate portal at susiair.com/application with your email and passcode. 2. Open Technical T
+est and choose Submit your test. 3. Drag and drop your PDF into the upload area. The PDF must be under 20 MB . 4. Press Submit test. Uploading alone d
+oes not submit your work. Your test is only received once you press Submit test. Until the deadline you can choose Edit submission to replace your fil
+e, then press Submit test again. 

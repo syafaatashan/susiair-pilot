@@ -8,23 +8,16 @@ const password = ref('')
 
 async function submit() {
   const ok = await auth.login(username.value.trim(), password.value)
-  if (ok) {
-    const pilot = usePilotStore()
-    await pilot.fetchProfile().catch(() => {})
-    await router.push('/')
-  }
+  if (!ok) return
+  // Warm the profile so Home paints with real data immediately after login.
+  await usePilotStore().fetchProfile()
+  await router.push('/')
 }
 </script>
 
 <template>
   <div class="login">
-    <div class="login__brand">
-      <span class="login__mark">SA</span>
-      <div>
-        <p class="login__brand-name">SUSI AIR</p>
-        <p class="login__brand-sub">Pilot App</p>
-      </div>
-    </div>
+    <BrandLogo variant="dark" />
 
     <h1 class="login__title">Sign in</h1>
     <p class="login__sub muted">Use your pilot credentials to continue.</p>
@@ -57,35 +50,6 @@ async function submit() {
 .login {
   display: flex;
   flex-direction: column;
-
-  &__brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  &__mark {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    background: $navy;
-    color: #fff;
-    font-weight: 800;
-    font-size: 15px;
-    display: grid;
-    place-items: center;
-  }
-
-  &__brand-name {
-    font-size: 13px;
-    font-weight: 800;
-    letter-spacing: 0.12em;
-  }
-
-  &__brand-sub {
-    font-size: 11px;
-    color: $text-secondary;
-  }
 
   &__title {
     margin-top: 22px;
