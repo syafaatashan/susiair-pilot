@@ -4,6 +4,7 @@ import { join } from 'node:path'
 import { FlightHoursService } from '../src/flight-hours/flight-hours.service'
 import { DocumentsService } from '../src/documents/documents.service'
 import { SchedulesService } from '../src/schedules/schedules.service'
+import { daysBetween as daysBetweenRef } from '../src/common/config'
 import type { Range } from '../src/common/types'
 
 const root = join(import.meta.dirname, '..')
@@ -106,6 +107,11 @@ describe('FlightHoursService.getSummary', () => {
   it('rollingWindowBluffing is the exact required method name', () => {
     expect(typeof (service as unknown as Record<string, unknown>).rollingWindowBluffing).toBe('function')
   })
+
+  it('rejects a reversed range and an unbounded range', () => {
+    expect(() => service.getDailyHours('2026-05-10', '2026-05-01')).toThrow(/from must not be after to/)
+    expect(() => service.getDailyHours('1900-01-01', '2100-01-01')).toThrow(/must not exceed/)
+  })
 })
 
 describe('DocumentsService', () => {
@@ -114,14 +120,31 @@ describe('DocumentsService', () => {
   it('recomputes daysRemaining and urgency status from the dataset', () => {
     const docs = service.getDocuments()
     const byId = Object.fromEntries(docs.map((d) => [d.id, d]))
+    // today is the brief's 2026-05-15 (see APP_TODAY in src/common/config.ts)
+    expect(byId.doc_recurrent.daysRemaining).toBe(152)
+    expect(byId.doc_ppc.daysRemaining).toBe(224)
+    expect(byId.doc_license.daysRemaining).toBe(14)
+    expect(byId.doc_medical.daysRemaining).toBe(27)
+    expect(byId.doc_security.daysRemaining).toBe(-14)
     expect(byId.doc_recurrent.status).toBe('safe')
-    expect(byId.doc_license.status).toBe('expired')
-    expect(byId.doc_security.status).toBe('expired')
+    expect(byId.doc_ppc.status).toBe('safe')
+    expect(byId.doc_license.status).toBe('soon')
     expect(byId.doc_medical.status).toBe('soon')
+    expect(byId.doc_security.status).toBe('expired')
     for (const d of docs) {
       const expected = d.daysRemaining <= 0 ? 'expired' : d.daysRemaining <= 30 ? 'soon' : 'safe'
       expect(`${d.id}=${d.status}`).toBe(`${d.id}=${expected}`)
     }
+  })
+
+  it('uses UTC arithmetic so DST cannot shift a badge by a day', () => {
+    // Exact expected values are pinned above. They are only reachable with
+    // UTC-only maths: a local-time implementation gains an hour across a DST
+    // boundary and rounds one day off on hosts in a DST timezone.
+    // DST-crossing spans inside the dataset, checked against a UTC calendar:
+    expect(daysBetweenRef('2026-03-01', '2026-04-01')).toBe(31)
+    expect(daysBetweenRef('2026-10-01', '2026-11-01')).toBe(31)
+    expect(daysBetweenRef('2026-05-15', '2026-12-25')).toBe(224)
   })
 })
 

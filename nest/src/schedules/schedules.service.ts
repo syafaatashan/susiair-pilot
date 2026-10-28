@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { loadSchedulesData } from '../common/data-loader.js'
+import { APP_TODAY } from '../common/config.js'
 import type { SchedulesData, ScheduleEntry } from '../common/types.js'
 
 @Injectable()
@@ -19,7 +20,7 @@ export class SchedulesService {
   } {
     const prefix = `${year}-${String(month).padStart(2, '0')}`
     return {
-      today: process.env.APP_TODAY ?? this.data.today,
+      today: APP_TODAY,
       year,
       month,
       legend: this.data.legend,

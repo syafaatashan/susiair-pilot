@@ -75,17 +75,25 @@ Per-range bounds (`limit` / `yMax`): 1w 40/45 · 1m 100/125 · 3m 300/325 · 6m 
 
 ## 5. GET /documents
 
-200 (array; `today` comes from the documents dataset = `2026-05-31`):
+200 (array). `daysRemaining` is computed against the app-wide `today`
+(see `APP_TODAY` in `nest/src/common/config.ts`, default `2026-05-15` per the brief):
+
 ```json
 [
- {"id":"doc_recurrent","label":"Next Recurrent Date","expiryDate":"2026-10-14","daysRemaining":136,"status":"safe"},
- {"id":"doc_ppc","label":"PPC Exp. Date","expiryDate":"2026-12-25","daysRemaining":208,"status":"safe"},
- {"id":"doc_license","label":"Indonesian License Exp. Date","expiryDate":"2026-05-29","daysRemaining":-2,"status":"expired"},
- {"id":"doc_medical","label":"Indonesian Medical Exp. Date","expiryDate":"2026-06-11","daysRemaining":11,"status":"soon"},
- {"id":"doc_security","label":"Security Clearance Exp. Date","expiryDate":"2026-05-01","daysRemaining":-30,"status":"expired"}
+ {"id":"doc_recurrent","label":"Next Recurrent Date","expiryDate":"2026-10-14","daysRemaining":152,"status":"safe"},
+ {"id":"doc_ppc","label":"PPC Exp. Date","expiryDate":"2026-12-25","daysRemaining":224,"status":"safe"},
+ {"id":"doc_license","label":"Indonesian License Exp. Date","expiryDate":"2026-05-29","daysRemaining":14,"status":"soon"},
+ {"id":"doc_medical","label":"Indonesian Medical Exp. Date","expiryDate":"2026-06-11","daysRemaining":27,"status":"soon"},
+ {"id":"doc_security","label":"Security Clearance Exp. Date","expiryDate":"2026-05-01","daysRemaining":-14,"status":"expired"}
 ]
 ```
+
 `status`: `expired` when daysRemaining <= 0 · `soon` when <= 30 · else `safe`. Badge state comes from the API — no client-side calculation.
+
+> Note: `mock-documents.json` ships its own `today: 2026-05-31`, while the brief and
+> `mock-schedules.json` say 2026-05-15. The API uses ONE configurable date everywhere
+> so local and deployed behaviour match. Run the backend with `APP_TODAY=2026-05-31`
+> to reproduce the documents dataset's own reading (136/208/-2/11/-30).
 
 ## 6. GET /schedules?year=YYYY&month=MM
 

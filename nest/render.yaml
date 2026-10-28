@@ -6,7 +6,6 @@ services:
     rootDir: nest
     buildCommand: npm ci && npm run build
     startCommand: node dist/main.js
-    healthCheckPath: /pilot/me
     envVars:
       - key: NODE_VERSION
         value: 24

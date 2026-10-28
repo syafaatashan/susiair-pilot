@@ -1,3 +1,10 @@
+<script setup lang="ts">
+// The header lives outside the page's async setup, so fetch the pilot here:
+// an awaited setup suspends the whole layout subtree until the profile is in.
+const pilot = usePilotStore()
+await (pilot.profile ? Promise.resolve() : pilot.fetchProfile())
+</script>
+
 <template>
   <div class="shell">
     <div class="shell__inner">

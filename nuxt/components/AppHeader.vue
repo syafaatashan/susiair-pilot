@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// NOTE: Pinia unwraps store refs, so `pilot.profile` is the plain Pilot object here.
 const profile = computed(() => usePilotStore().profile)
 const greeting = computed(() => {
   const h = new Date().getHours()
@@ -15,8 +16,7 @@ const initials = computed(() =>
 )
 const hours = computed(() =>
   profile.value ? profile.value.totalFlightHours.toLocaleString('en-US', { minimumFractionDigits: 1 }) : '—'
-)
-</script>
+)</script>
 
 <template>
   <header class="app-header">

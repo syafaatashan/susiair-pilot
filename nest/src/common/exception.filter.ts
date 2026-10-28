@@ -17,15 +17,17 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       status = exception.getStatus()
       const res = exception.getResponse()
       if (typeof res === 'string') {
-        message = res
+        message = this.sanitize(res, status)
       } else {
         const inner = (res as Record<string, unknown>).message
-        if (typeof inner === 'string' || Array.isArray(inner)) message = inner as string | string[]
+        if (typeof inner === 'string') message = this.sanitize(inner, status)
+        else if (Array.isArray(inner)) message = inner.map(String)
         else if (inner !== undefined) message = inner as Record<string, unknown>
       }
     } else if (exception instanceof Error) {
+      // Log the real cause, never return it to the client.
       this.logger.error(exception.message, exception.stack)
-      message = status === 500 ? 'Internal server error' : exception.message
+      message = 'Internal server error'
     } else {
       this.logger.error(String(exception))
     }
@@ -37,6 +39,18 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       timestamp: new Date().toISOString(),
       path: request.url,
     })
+  }
+
+  /**
+   * Body-parser forwards its raw parser text ("Unexpected token ... in JSON at
+   * position 1"). Replace it with a stable, non-leaky message so every 400 in
+   * the API reads consistently.
+   */
+  private sanitize(message: string, status: number): string {
+    if (status === 400 && /json|unexpected token|expected property/i.test(message)) {
+      return 'Invalid JSON payload'
+    }
+    return message
   }
 
   private getErrorName(status: number): string {

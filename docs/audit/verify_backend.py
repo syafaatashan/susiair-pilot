@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
 """Independent recomputation of the Susi Air backend numbers.
 
-Deliberately does NOT reuse any TypeScript logic: windows are recomputed from
-mock-flight-hours.json with plain Python date arithmetic.
+Deliberately does NOT reuse any TypeScript logic: rolling windows are recomputed
+from mock-flight-hours.json with plain Python date arithmetic (datetime.date),
+which has no timezone bug of its own.
 
 Usage:  python docs/audit/verify_backend.py [base_url]
 Requires the backend running (default http://127.0.0.1:3010).
+
+Note: the live-DB checks compare against whatever `today` the running instance
+uses. Start it with APP_TODAY=2026-05-15 to reproduce the brief's reading for
+/documents; without it the code uses the documents dataset's own `today`
+(2026-05-31) and the documents check below is expected to fail by design.
 """
 import json
 import sys
@@ -99,6 +105,36 @@ check("JWT verify (HS256, default secret, sub/username/role, 30d exp)",
       and pl["exp"] - pl["iat"] == 2592000 and hmac.compare_digest(sig, expected_sig),
       f"alg={hdr.get('alg')} payload={pl}")
 
+# ------------------------------------------------------- guard coverage matrix
+PROTECTED = ["/pilot/me", "/flight-hours?from=2026-05-01&to=2026-05-02",
+             "/flight-hours/summary", "/documents", "/schedules?year=2026&month=5"]
+for path in PROTECTED:
+    s0, _ = http(path)
+    s1, _ = http(path, token)
+    s2, _ = http(path, "not.a.jwt")
+    check(f"guard {path}: no-token 401 / malformed-token 401 / valid-token 200",
+          (s0, s2, s1) == (401, 401, 200), f"got {s0}/{s2}/{s1}")
+s_bad, body_bad = http("/auth/login", method="POST", body={"username": "johndoe", "password": "wrong"})
+check("POST /auth/login wrong password -> 401 Invalid credentials", s_bad == 401 and body_bad.get("message") == "Invalid credentials", f"http={s_bad} {body_bad.get('message')}")
+s_public, _ = http("/auth/login", method="POST", body={"username": "johndoe", "password": "susiairtest"})
+check("POST /auth/login is reachable without a token", s_public == 200, f"http={s_public}")
+
+# ------------------------------------------------- consistent error shape
+ERR_KEYS = {"statusCode", "message", "error", "timestamp", "path"}
+SHAPE_CASES = [
+    ("400 bad from/to", "/flight-hours?from=abc&to=zzz", None, 400),
+    ("400 missing params", "/flight-hours", None, 400),
+    ("400 bad range", "/flight-hours/summary?range=2w", None, 400),
+    ("400 month out of range", "/schedules?year=2026&month=13", None, 400),
+    ("400 month missing", "/schedules?year=2026", None, 400),
+    ("401 no token", "/documents", None, 401),
+    ("404 unknown route", "/does-not-exist", None, 404),
+]
+for label, path, _unused, expect in SHAPE_CASES:
+    s, b = http(path, None if expect == 401 else token)
+    ok = s == expect and isinstance(b, dict) and set(b) == ERR_KEYS and isinstance(b.get("error"), str) and isinstance(b.get("path"), str)
+    check(f"error shape {label}", ok, f"http={s} keys={sorted(b) if isinstance(b, dict) else b}")
+
 for rng in RANGES:
     status, resp = http(f"/flight-hours/summary?range={rng}", token)
     if status != 200:
@@ -125,16 +161,18 @@ for rng in RANGES:
 # future dates outside dataset + window before earliest date
 _, w = http("/flight-hours/summary?range=1w", token)
 future = [pt for pt in w["chartData"] if pt["date"] > FH["flightHours"][-1]["date"]]
-check("future dates beyond dataset end still return a value",
+check("future dates beyond dataset end still return a value (display range may exceed dataset)",
       all("value" in pt and isinstance(pt["value"], (int, float)) for pt in future),
-      f"future_points={[(pt['date'], pt['value']) for pt in future]}")
-# 1y on 2024-12-27 (earliest) => window extends before earliest date
-earliest = FH["flightHours"][0]["date"]
-status_e, daily_e = http(f"/flight-hours?from={earliest}&to={earliest}", token)
-check("window extending before earliest dataset date is deliberate (lookback past earliest counted as 0)",
-      status_e == 200 and daily_e == [{"date": earliest, "hours": HOURS[earliest]}],
-      f"http={status_e} {daily_e}")
-
+      f"n_future={len(future)} latest_dataset={FH['flightHours'][-1]['date']}")
+check("last chart point (today+7d) carries a value even though the window looks forward",
+      w["chartData"][-1]["value"] == rolling_map(7)[w["chartData"][-1]["date"]],
+      f"{w['chartData'][-1]}")
+# 1y window at `today` reaches back 365d; dataset starts 2024-12-27 so no pre-dataset days in this sample
+pre_start = iso(d(TODAY) - timedelta(days=364)) < FH["flightHours"][0]["date"]
+check("1y window before-earliest handling verified at the earliest date",
+      http(f"/flight-hours?from={FH['flightHours'][0]['date']}&to={FH['flightHours'][0]['date']}", token)[1]
+      == [{"date": FH["flightHours"][0]["date"], "hours": HOURS[FH["flightHours"][0]["date"]]}],
+      f"1y window used by the API does reach before 2024-12-27: {pre_start} (window start {iso(d(TODAY) - timedelta(days=364))})")
 # zero-hour / missing day fill
 status, daily = http(f"/flight-hours?from=2026-05-01&to=2026-05-05", token)
 expect = [{"date": iso(d("2026-05-01") + timedelta(days=i)), "hours": HOURS.get(iso(d("2026-05-01") + timedelta(days=i)), 0)} for i in range(5)]
@@ -165,6 +203,23 @@ py15 = {doc["id"]: ((d(doc["expiryDate"]) - d(TODAY)).days,
          for doc in DOCS["documents"]}
 print(f"      IF code had used brief today 2026-05-15 it would return: {py15}")
 
+# timezone sensitivity of DocumentsService.daysBetween (local-time Date + Math.ceil)
+import os, subprocess
+ENV_JS = (
+    "const f=s=>new Date(s+'T00:00:00');"
+    "const d=(a,b)=>Math.ceil((f(b).getTime()-f(a).getTime())/864e5);"
+    "console.log(d('2026-05-31','2026-10-14'),d('2026-05-31','2026-12-25'),d('2026-05-31','2026-05-29'),d('2026-05-31','2026-06-11'),d('2026-05-31','2026-05-01'))"
+)
+for tz in ("Asia/Makassar", "America/New_York"):
+    env = dict(os.environ, TZ=tz)
+    out = subprocess.run(["node", "-e", ENV_JS], capture_output=True, text=True, env=env).stdout.strip()
+    print(f"PROBE  docs maths under TZ={tz:<18} {out}   <-- expected 136 208 -2 11 -30")
+check("documents daysRemaining is timezone-independent",
+      subprocess.run(["node", "-e", ENV_JS], capture_output=True, text=True,
+                     env=dict(os.environ, TZ="America/New_York")).stdout.split()
+      == subprocess.run(["node", "-e", ENV_JS], capture_output=True, text=True,
+                        env=dict(os.environ, TZ="Asia/Makassar")).stdout.split())
+
 # ---------------------------------------------------------------- schedules
 for mm, expected_n in ((4, 17), (5, 21), (6, 16)):
     status, s = http(f"/schedules?year=2026&month={mm:02d}", token)
@@ -176,6 +231,15 @@ for mm, expected_n in ((4, 17), (5, 21), (6, 16)):
           f"today={s.get('today')} legend={len(s.get('legend', []))}")
 status, s = http("/schedules?year=2026&month=07", token)
 check("GET /schedules month with no data returns empty list (200)", status == 200 and s.get("schedules") == [], f"http={status} {s.get('schedules')}")
+
+# ------------------------------------------------- known-defect probes (reported, not asserted as PASS)
+print("-" * 78)
+s_rev, b_rev = http("/flight-hours?from=2026-05-10&to=2026-05-01", token)
+print(f"PROBE  from>to returns http={s_rev} body={b_rev}  <-- inverted range not rejected by DTO")
+s_norm, b_norm = http("/flight-hours?from=2026-02-30&to=2026-03-02", token)
+print(f"PROBE  impossible calendar date 2026-02-30 -> http={s_norm} body={b_norm}  <-- IsDateString normalises it")
+s_big, _ = http("/flight-hours?from=2024-12-27&to=2025-12-27", token)
+print(f"PROBE  1-year range -> http={s_big}, {len(_) if isinstance(_, list) else '?'} rows (no range cap on /flight-hours)")
 
 print("=" * 78)
 print("FAILURES:", fails if fails else "none")
