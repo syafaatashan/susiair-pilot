@@ -13,6 +13,10 @@ export default defineNuxtConfig({
     apiBase: 'http://localhost:3010',
     public: {}
   },
+  // SSR-on-Vercel needs the `vercel` Nitro preset (serverless functions); locally
+  // we keep the default runnable node preset so `node .output/server/index.mjs`
+  // still works. Vercel sets VERCEL=1 at build time, so this never changes local runs.
+  nitro: { preset: process.env.VERCEL === '1' ? 'vercel' : undefined },
   app: {
     head: {
       htmlAttrs: { lang: 'en' },
