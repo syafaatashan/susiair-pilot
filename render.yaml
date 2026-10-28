@@ -1,0 +1,19 @@
+# Render service manifest for the Susi Air Pilot backend (NestJS).
+# Render reads render.yaml from the repository root. `rootDir: nest` scopes the
+# build to the NestJS workspace in this monorepo. JWT_SECRET is auto-generated
+# by Render (generateValue: true), so no production secret is ever committed.
+# NODE_ENV=production makes AuthModule refuse to boot without JWT_SECRET.
+# Deploy target: syafaatashan/susiair-pilot (public) -> this service.
+services:
+  - type: web
+    name: susiair-pilot-api
+    runtime: node
+    rootDir: nest
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:prod
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
