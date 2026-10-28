@@ -721,3 +721,56 @@ PROBE  1-year range -> http=200, 366 rows (no range cap on /flight-hours)
 ==============================================================================
 FAILURES: ['documents daysRemaining is timezone-independent']
 ```
+
+## Resolution log (re-verification — 2026-10-28)
+
+qaudit could not be re-run autonomously in this session (each spawn/resume attempt failed
+before producing output), so the Lead re-ran `verify_backend.py` against the live server and
+re-probed every endpoint. `verify_backend.py` was already version-aware (it reads `APP_TODAY`,
+defaulting to 2026-05-15 and asserting `152/224/14/27/-14`), so no logic rewrite was needed —
+only the stale captured output above was left behind by the first run. Fresh run: **FAILURES: none**.
+
+| # | Original | Now | Evidence |
+| --- | --- | --- | --- |
+| D-1 | timezone-dependent `daysRemaining` | CLOSED | `212`→`212`/`152`/`224`/`14`/`27`/`-14` identical under `TZ=Asia/Makassar`, `America/New_York` (3012) and `Pacific/Kiritimati` (UTC+14). No `new Date(` in `documents.service.ts`; `Date.UTC` + `Math.round` only. |
+| D-2 | stale scaffold e2e spec | CLOSED | `test/app.e2e-spec.ts` (21 tests) is the real suite; `vitest.config.ts` excludes `**/*.e2e-spec.ts` from unit. |
+| D-3 | `from > to` not rejected | CLOSED | `?from=2026-05-10&to=2026-05-01` → 400 `from must not be after to`. |
+| D-4 | impossible dates pass validation | CLOSED | `@IsCalendarDate` (`is-calendar-date.decorator.ts`) rejects `2026-02-30` → 400. |
+| D-5 | no range cap → 2.3 MB response | CLOSED | `MAX_RANGE_DAYS = 366` enforced in `flight-hours.service.ts`. |
+| D-6 | body-parser messages leaked verbatim | CLOSED | `Invalid JSON payload` / `Internal server error` literals; no parser internals. |
+| D-7 | missing-param messages mislead | CLOSED | `@IsDefined` → `from is required` / `month is required`. |
+| D-8 | root README missing | CLOSED | `nest/README.md` (209 lines, backend-specific). |
+| D-9 | dead `getCurrentValue`/`getDailyTotal` | CLOSED | grep 0 hits. |
+
+### Risks RISK-1…RISK-6
+
+* **RISK-1 (today discrepancy)** — CLOSED. Single configurable `APP_TODAY` (default 2026-05-15)
+  shared by flight-hours + documents + schedules. `render.yaml` no longer sets it; a bare
+  `node dist/main.js` and a Render deploy agree. `docs/api-contract.md` documents both readings.
+* **RISK-2** — CLOSED (D-9).
+* **RISK-3 (committed default JWT secret)** — CLOSED. `auth.module.ts` throws at boot when
+  `NODE_ENV=production && !JWT_SECRET` (verified: exits non-zero without it; login → 200 with it).
+  Dev keeps the fallback with a loud warning.
+* **RISK-4 (deduplicated datasets)** — NOTE (low). Root-level copies kept as brief attachments;
+  the loader reads only `nest/data/`. `docs/api-contract.md` states the loader is source of truth.
+  Harm: none at runtime; cosmetically redundant.
+* **RISK-5 (unbounded responses)** — CLOSED (D-5); no other route is unbounded.
+* **RISK-6 (healthCheckPath behind guard)** — CLOSED. `render.yaml` no longer sets `healthCheckPath`.
+
+### Behaviour change introduced (intentional)
+
+Documents now use `APP_TODAY = 2026-05-15` (the brief's date), so `doc_license` flips
+`expired(-2)`→`soon(14)`. Reproducible as the dataset's own reading with `APP_TODAY=2026-05-31`
+(→ `136/208/-2/11/-30`). Documented in `nest/.env.example` and `docs/api-contract.md`.
+
+### Fresh re-run summary (production, `node dist/main.js`)
+
+```
+BASE=http://127.0.0.1:3010 | app-wide today=2026-05-15
+...
+FAILURES: none
+```
+
+(D-10, the body-parser verbatim-message leak called out in §5, is addressed by D-6: the
+exception filter emits fixed strings, confirmed across 400 validation + malformed-body + 500
+paths.)
