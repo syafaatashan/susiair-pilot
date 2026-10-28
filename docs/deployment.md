@@ -93,7 +93,7 @@ Free Render instances sleep after ~15 minutes idle; the first request afterwards
 
    | Key | Value |
    | --- | --- |
-   | `NUXT_PUBLIC_API_BASE` | the Render URL from step 1, no trailing slash |
+   | `NUXT_API_BASE` | the Render URL from step 1, no trailing slash |
 
 5. Deploy and note the URL, e.g. `https://susiair-pilot.vercel.app`.
 
@@ -117,7 +117,7 @@ deployed web app works even if the API's CORS policy were tightened later.
 6. Refresh the page while signed in: the guard must keep you signed in (the token is in a
    cookie).
 
-If the app renders but every panel is empty, `NUXT_PUBLIC_API_BASE` is wrong or the API is
+If the app renders but every panel is empty, `NUXT_API_BASE` is wrong or the API is
 asleep — check the browser network tab for the failing request.
 
 ---
@@ -125,7 +125,7 @@ asleep — check the browser network tab for the failing request.
 ## 3. Alternatives
 
 **Netlify instead of Vercel** (web app): site settings → build command `npm run build`,
-publish directory `nuxt/.output/public`, and the same `NUXT_PUBLIC_API_BASE` variable.
+publish directory `nuxt/.output/public`, and the same `NUXT_API_BASE` variable.
 Nuxt's Nitro server build needs the Node runtime, so use **Vercel** or Netlify's Next/Nuxt
 runtime rather than a plain static publish if you want SSR.
 

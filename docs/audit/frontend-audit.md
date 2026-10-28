@@ -231,7 +231,7 @@ the calendar marker all use the API's `today`. This matches the author's claim a
 | Logout control | **FAIL** | `auth.signOut()` exists but is only referenced from `useApi.ts:35` (401 handler) — there is no button, link or menu anywhere. A pilot cannot end their session. |
 | Expiry handling | PASS-WITH-NOTE | the JWT carries `exp` (30 days); the app never inspects it and relies on the API's 401. That is acceptable, but it makes F-3 (no redirect after 401) the user-visible consequence. |
 | Guard is not the security boundary | PASS | every endpoint is guarded server-side; a forged cookie yields 401 with no data |
-| No secrets in the repo | PASS | frontend only reads `NUXT_PUBLIC_API_BASE` |
+| No secrets in the repo | PASS | frontend only reads `NUXT_API_BASE` |
 
 ---
 

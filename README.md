@@ -38,7 +38,7 @@ npm run dev
 ```
 
 The app defaults to `http://localhost:3010` for the API. Point it somewhere else with
-`NUXT_PUBLIC_API_BASE`. Port 3000 is only a default on the Nuxt side — any free port works
+`NUXT_API_BASE`. Port 3000 is only a default on the Nuxt side — any free port works
 (`npm run dev -- --port 3020`).
 
 ### Verify both halves together
@@ -128,7 +128,7 @@ npm run test:e2e  # 21 end-to-end HTTP tests (auth, validation, error shape)
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `NUXT_PUBLIC_API_BASE` | `http://localhost:3010` | API base URL (public runtime config). |
+| `NUXT_API_BASE` | `http://localhost:3010` | API base URL (server-side runtime config). |
 | `PORT` | `3000` | Port for `nuxt dev` / the built server. |
 
 ---
@@ -185,7 +185,7 @@ See [`docs/deployment.md`](./docs/deployment.md) for exact steps. In short:
 - **API** → Render (or Railway/Fly) using `nest/render.yaml` or `nest/Dockerfile`.
   Set `JWT_SECRET`; leave `APP_TODAY` unset to keep the documented default.
 - **Web app** → Vercel or Netlify with the project root set to `nuxt/`, and
-  `NUXT_PUBLIC_API_BASE` pointing at the deployed API URL.
+  `NUXT_API_BASE` pointing at the deployed API URL.
 
 CORS is enabled in `nest/src/main.ts` with `origin: true`, so the deployed frontend can call
 the deployed API without extra configuration.

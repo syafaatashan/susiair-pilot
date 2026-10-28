@@ -32,20 +32,20 @@ Production build / preview:
 
 ```bash
 npm run build
-node .output/server/index.mjs        # honors PORT + NUXT_PUBLIC_API_BASE
+node .output/server/index.mjs        # honors PORT + NUXT_API_BASE
 ```
 
 ### Environment variables
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `NUXT_PUBLIC_API_BASE` | `http://localhost:3010` | API base URL (runtime config, public) |
+| `NUXT_API_BASE` | `http://localhost:3010` | API base URL (server-side runtime config) |
 | `PORT` | `3000` | Port for `nuxt dev` / the built server |
 
 Local `.env` example:
 
 ```
-NUXT_PUBLIC_API_BASE=http://localhost:3010
+NUXT_API_BASE=http://localhost:3010
 ```
 
 Demo credentials: **johndoe / susiairtest**.
