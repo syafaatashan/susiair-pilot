@@ -326,7 +326,8 @@ def build(repo: str, web: str, api: str, out_path: str) -> None:
                 "validation and the error envelope. Both suites also pass with `TZ=America/New_York`.")
     bullet(doc, "**Frontend** — `npm run typecheck` and `npm run build` are clean.")
     bullet(doc, "**End to end** — `nuxt/scripts/e2e-check.mjs` drives the running API and asserts on the "
-                "server-rendered HTML of `/`, `/schedule` and `/login`: 16/16 checks.")
+                "server-rendered HTML of `/`, `/schedule` and `/login`: 27/27 checks (auth, SSR data, "
+                "no JWT in HTML, cookie flags, logout, forged-cookie redirect, friendly API-down error).")
     bullet(doc, "**Independent audit** — the code was reviewed against the brief by a separate auditor; "
                 "findings and resolutions are in `docs/audit/`.")
 
@@ -350,9 +351,10 @@ cd nest && npm install && npm run build
 PORT=3010 node dist/main.js
 #   PowerShell: $env:PORT="3010"; node dist/main.js
 
-# Web app  ->  http://localhost:3000   (second terminal)
-cd nuxt && npm install
-NUXT_PUBLIC_API_BASE=http://localhost:3010 npm run dev
+# Web app (Nuxt, SSR)  ->  http://localhost:3020   (port 3000 is taken by 9router/Docker)
+cd nuxt && npm run build
+NUXT_API_BASE=http://localhost:3010 PORT=3020 node .output/server/index.mjs
+#   or dev:  NUXT_API_BASE=http://localhost:3010 npm run dev -- --port 3020
 """)
     para(doc, "Demo credentials: **`johndoe` / `susiairtest`**")
 

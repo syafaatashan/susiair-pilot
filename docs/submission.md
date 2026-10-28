@@ -10,9 +10,9 @@
 
 | Item | Link |
 | --- | --- |
-| GitHub repository | `<<GITHUB_REPO_URL>>` |
-| Live web app (Nuxt 3) | `<<WEB_APP_URL>>` |
-| Live API (NestJS) | `<<API_URL>>` |
+| GitHub repository | <https://github.com/syafaatashan/susiair-pilot> |
+| Live web app (Nuxt 3) | `<<WEB_APP_URL>>` (deployed by candidate on Vercel — see §6 / `docs/deployment.md`) |
+| Live API (NestJS) | `<<API_URL>>` (deployed by candidate on Render — see `docs/deployment.md`) |
 
 Repository layout: `nest/` (REST API) and `nuxt/` (pilot web app), plus `docs/` with the
 API contract, deployment guide and audit reports.
@@ -163,9 +163,10 @@ paths, keeping the dependency surface at Nuxt + Pinia.
 cd nest && npm install && npm run build
 PORT=3010 node dist/main.js          # PowerShell: $env:PORT="3010"; node dist/main.js
 
-# Web app (second terminal)
-cd nuxt && npm install
-NUXT_PUBLIC_API_BASE=http://localhost:3010 npm run dev
+# Web app (Nuxt, SSR) — port 3020 (3000 is taken by 9router/Docker)
+cd nuxt && npm run build
+NUXT_API_BASE=http://localhost:3010 PORT=3020 node .output/server/index.mjs
+#   or dev:  NUXT_API_BASE=http://localhost:3010 npm run dev -- --port 3020
 ```
 
 Demo credentials: **`johndoe` / `susiairtest`**
