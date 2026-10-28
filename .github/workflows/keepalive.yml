@@ -1,0 +1,17 @@
+name: keepalive
+
+# Ping the Render Free backend every 10 min (UTC) so it never crosses the
+# 15-min idle window that triggers spin-down (~50s cold-start penalty).
+# Free tier web services always sleep; this external heartbeat is the only
+# way to keep one warm without upgrading to a paid plan.
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wake Render Free instance
+        run: curl -sS -o /dev/null -m 10 https://susiair-pilot-api.onrender.com/health
