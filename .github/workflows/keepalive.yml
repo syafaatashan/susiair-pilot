@@ -14,4 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Wake Render Free instance
-        run: curl -sS -o /dev/null -m 10 https://susiair-pilot-api.onrender.com/health
+        # A sleeping Render Free instance needs 30-90s to boot, so a short
+        # timeout reports a false failure. Give each attempt 120s and retry:
+        # the request either wakes the instance or confirms it is already up.
+        run: >
+          curl -sS --fail --retry 2 --retry-delay 5 --retry-all-errors
+          -o /dev/null -m 120
+          https://susiair-pilot-api.onrender.com/health
