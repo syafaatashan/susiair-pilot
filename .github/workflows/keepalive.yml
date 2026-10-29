@@ -4,6 +4,11 @@ name: keepalive
 # 15-min idle window that triggers spin-down (~50s cold-start penalty).
 # Free tier web services always sleep; this external heartbeat is the only
 # way to keep one warm without upgrading to a paid plan.
+#
+# Note: GitHub's scheduler may delay or skip cron slots (observed: 4-5 h gaps
+# on this repo). Treat this as best-effort - the API still serves correctly
+# after a cold start, the first request just pays the ~30-90s boot penalty.
+# The timeout is deliberately generous so a cold wake-up is not a false failure.
 on:
   schedule:
     - cron: '*/10 * * * *'
